@@ -2,7 +2,7 @@
 module Api
   module V1
     class WorkspacesController < ApplicationController
-      
+      before_action :authorize_request
 
       # GET /api/v1/workspaces
       def index
@@ -47,6 +47,16 @@ module Api
           head :no_content
         else
           render json: { errors: result.errors }, status: :not_found
+        end
+      end
+
+      # POST /api/v1/workspaces/:id/join
+      def join
+        result = WorkspaceService.join(params[:id], @current_user)
+        if result.success?
+          render json: { message: 'ワークスペースに参加しました。' }, status: :ok
+        else
+          render json: { errors: result.errors }, status: :unprocessable_entity
         end
       end
 

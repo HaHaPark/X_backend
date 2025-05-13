@@ -52,4 +52,28 @@ class WorkspaceService
     ws.destroy
     DeleteResult.new(true, nil)
   end
+
+  # Workspace join
+  JoinResult = Struct.new(:success?, :workspace_user, :errors)
+  def self.join(workspace_id, user)
+    ws = Workspace.find_by(id: workspace_id)
+    return JoinResult.new(false, nil, ['Workspace not found']) unless ws
+
+    # if member?
+    if ws.users.exists?(user.id)
+      return JoinResult.new(false, nil, ['User already a member'])
+    end
+
+    wu = WorkspaceUser.new(workspace: ws, user: user)
+    if wu.save
+      JoinResult.new(true, wu, nil)
+    else
+      JoinResult.new(false, nil, wu.errors.full_messages)
+    end
+  end
+
+
 end
+
+
+

@@ -1,16 +1,18 @@
 Rails.application.routes.draw do
-  # check
+  
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # API endpoint
   namespace :api do
     namespace :v1 do
       post   'login',  to: 'sessions#create'
       delete 'logout', to: 'sessions#destroy'
       resources :users, only: [:create, :index]
-      resources :workspaces, only: [:index, :show, :create, :update, :destroy]
-    end
-  end
+      
+      resources :workspaces, only: [:index, :show, :create, :update, :destroy] do
+        post 'join', on: :member
+      end   
 
-end
-
+      resources :tasks, only: [:show, :update, :destroy]
+    end  # namespace :v1
+  end    # namespace :api
+end    # routes.draw
