@@ -1,4 +1,3 @@
-# app/controllers/api/v1/sessions_controller.rb
 module Api
   module V1
     class SessionsController < ApplicationController
@@ -6,23 +5,24 @@ module Api
 
       # POST /api/v1/login
       def create
-        user = User.find_by(email: params[:email])
-        if user&.authenticate(params[:password])
-          session[:user_id] = user.id
-          render json: { id: user.id, email: user.email, name: user.name }, status: :ok
+        result = AuthenticationService.authenticate(params[:email], params[:password])
+        if result.success?
+          session[:user_id] = result.user.id
+          render json: {
+            id:    result.user.id,
+            email: result.user.email,
+            name:  result.user.name
+          }, status: :ok
         else
-          render json: { errors: ['이메일 또는 비밀번호가 올바르지 않습니다'] }, status: :unauthorized
+          render json: { errors: result.errors }, status: :unauthorized
         end
       end
 
       # DELETE /api/v1/logout
       def destroy
-        session.delete(:user_id)
+        reset_session
         head :no_content
       end
-
-
-      
     end
   end
 end

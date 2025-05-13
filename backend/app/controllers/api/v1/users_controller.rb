@@ -5,21 +5,21 @@ module Api
 
       # GET /api/v1/users
       def index
-        users = User.select(:id, :email, :name)
-        render json: users, status: :ok
+        result = UserManagementService.list
+        render json: result.users, status: :ok
       end
 
       # POST /api/v1/users
       def create
-        user = User.new(user_params)
-        if user.save
+        result = UserManagementService.register(user_params)
+        if result.success?
           render json: {
-            id:    user.id,
-            email: user.email,
-            name:  user.name
+            id:    result.user.id,
+            email: result.user.email,
+            name:  result.user.name
           }, status: :created
         else
-          render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: result.errors }, status: :unprocessable_entity
         end
       end
 
