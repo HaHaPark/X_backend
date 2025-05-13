@@ -4,15 +4,26 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      # login
       post   'login',  to: 'sessions#create'
       delete 'logout', to: 'sessions#destroy'
+
+      # user
       resources :users, only: [:create, :index]
       
-      resources :workspaces, only: [:index, :show, :create, :update, :destroy] do
-        post 'join', on: :member
-      end   
+      # workspace
 
+      # public workspace list
+      get 'workspaces/public', to: 'workspaces#public_index'
+
+      resources :workspaces, only: [:index, :show, :create, :update, :destroy] do
+        post   'join', on: :member
+      
+        resources :tasks, only: [:index, :create]
+      end
+
+      # task (show/update/destroy)
       resources :tasks, only: [:show, :update, :destroy]
-    end  # namespace :v1
-  end    # namespace :api
-end    # routes.draw
+    end
+  end
+end

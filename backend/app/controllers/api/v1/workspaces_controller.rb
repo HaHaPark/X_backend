@@ -10,6 +10,13 @@ module Api
         render json: result.workspaces, status: :ok
       end
 
+      # all workspace
+      # GET /api/v1/workspaces/public
+      def public_index
+        workspaces = WorkspaceService.list_all
+        render json: workspaces, status: :ok
+      end
+
       # GET /api/v1/workspaces/:id
       def show
         result = WorkspaceService.show_for_user(@current_user, params[:id])
@@ -19,6 +26,7 @@ module Api
           render json: { errors: result.errors }, status: :not_found
         end
       end
+
 
       # POST /api/v1/workspaces
       def create

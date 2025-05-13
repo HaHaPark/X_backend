@@ -1,4 +1,3 @@
-# app/controllers/api/v1/tasks_controller.rb
 module Api
   module V1
     class TasksController < ApplicationController
@@ -6,21 +5,22 @@ module Api
       before_action :set_workspace, only: [:index, :create]
       before_action :set_task,      only: [:show, :update, :destroy]
 
-      # GET /api/v1/workspaces/:workspace_id/tasks
-      # ?assignee_id=&category=&status= filter
+      # GET  /api/v1/workspaces/:workspace_id/tasks
+      #    ?assignee_id=&category=&status= 필터 지원
       def index
         filters = {
           assignee_id: params[:assignee_id],
           category:    params[:category],
           status:      params[:status]
         }.compact
+
         result = TaskService.list(@workspace, filters)
         render json: result.tasks, status: :ok
       end
 
-      # GET /api/v1/tasks/:id
+      # GET  /api/v1/tasks/:id
       def show
-        result = TaskService.show(@task.workspace, @task.id)
+        result = TaskService.show(@task.id)
         if result.success?
           render json: result.task, status: :ok
         else
@@ -73,7 +73,13 @@ module Api
       end
 
       def task_params
-        params.require(:task).permit(:title, :content, :status, :due_date, :category)
+        params.require(:task).permit(
+          :title,
+          :content,
+          :status,    # "pending"/"in_progress"/"completed"
+          :due_date,
+          :category
+        )
       end
     end
   end

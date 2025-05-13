@@ -2,7 +2,11 @@ class Task < ApplicationRecord
   belongs_to :workspace
   belongs_to :user   
 
-  enum status: { pending: 'pending', in_progress: 'in_progress', completed: 'completed' }
+  
+  VALID_STATUSES = %w[pending in_progress completed].freeze
 
-  validates :title, :status, :due_date, presence: true
+
+  validates :title, presence: true
+  validates :due_date, presence: true
+  validates :status, presence: true, inclusion: { in: VALID_STATUSES }
 end

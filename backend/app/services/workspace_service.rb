@@ -11,6 +11,11 @@ class WorkspaceService
     ListResult.new(true, user.workspaces, nil)
   end
 
+  # all Workspace - public
+  def self.list_all
+    Workspace.all
+  end
+
   # Workspace delete
   def self.show_for_user(user, id)
     ws = user.workspaces.find_by(id: id)

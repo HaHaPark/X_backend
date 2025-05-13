@@ -28,7 +28,7 @@ async function onSubmit() {
   error.value = ''
   try {
     await axios.post('/api/v1/login', form, { withCredentials: true })
-    router.push('/logout')
+    router.push('/workspaces')
   } catch (e) {
     error.value = e.response?.data?.errors?.join('、') || 'ログインに失敗しました'
   }
