@@ -1,14 +1,15 @@
 Rails.application.routes.draw do
-  # 헬스 체크
+  # check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # API 엔드포인트
+  # API endpoint
   namespace :api do
     namespace :v1 do
+      post   'login',  to: 'sessions#create'
+      delete 'logout', to: 'sessions#destroy'
       resources :users, only: [:create]
     end
   end
 
-  # 필요시 추가 라우트…
 end
 
