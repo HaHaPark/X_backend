@@ -1,3 +1,4 @@
+# app/controllers/api/v1/tasks_controller.rb
 module Api
   module V1
     class TasksController < ApplicationController
@@ -6,7 +7,7 @@ module Api
       before_action :set_task,      only: [:show, :update, :destroy]
 
       # GET  /api/v1/workspaces/:workspace_id/tasks
-      #    ?assignee_id=&category=&status= 필터 지원
+      #    ?assignee_id=&category=&status= 
       def index
         filters = {
           assignee_id: params[:assignee_id],
@@ -15,14 +16,23 @@ module Api
         }.compact
 
         result = TaskService.list(@workspace, filters)
-        render json: result.tasks, status: :ok
+
+        # user association  JSON 
+        render json: result.tasks.as_json(
+          include: { user: { only: [:id, :name] } },
+          except:  [:workspace_id, :created_at, :updated_at]
+        ), status: :ok
       end
 
       # GET  /api/v1/tasks/:id
       def show
-        result = TaskService.show(@task.id)
+        # TaskService.show  (workspace, id) 
+        result = TaskService.show(@task.workspace, @task.id)
         if result.success?
-          render json: result.task, status: :ok
+          render json: result.task.as_json(
+            include: { user: { only: [:id, :name] } },
+            except:  [:workspace_id, :created_at, :updated_at]
+          ), status: :ok
         else
           render json: { errors: result.errors }, status: :not_found
         end
@@ -32,7 +42,10 @@ module Api
       def create
         result = TaskService.create(@workspace, task_params, @current_user)
         if result.success?
-          render json: result.task, status: :created
+          render json: result.task.as_json(
+            include: { user: { only: [:id, :name] } },
+            except:  [:workspace_id, :created_at, :updated_at]
+          ), status: :created
         else
           render json: { errors: result.errors }, status: :unprocessable_entity
         end
@@ -42,7 +55,10 @@ module Api
       def update
         result = TaskService.update(@task.id, task_params)
         if result.success?
-          render json: result.task, status: :ok
+          render json: result.task.as_json(
+            include: { user: { only: [:id, :name] } },
+            except:  [:workspace_id, :created_at, :updated_at]
+          ), status: :ok
         else
           render json: { errors: result.errors }, status: :unprocessable_entity
         end
