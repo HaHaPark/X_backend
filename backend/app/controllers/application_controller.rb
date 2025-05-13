@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
   def authorize_request
     @current_user = User.find_by(id: session[:user_id])
     unless @current_user
-      render json: { errors: ['로그인이 필요합니다'] }, status: :unauthorized
+      render json: { errors: ['ログインが必要です。'] }, status: :unauthorized
     end
   end
 end

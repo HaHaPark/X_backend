@@ -15,8 +15,6 @@ class UserManagementService
 
   # user list
   ListResult = Struct.new(:success?, :users)
-
-  # 유저 목록 조회
   def self.list
     users = User.select(:id, :email, :name)
     ListResult.new(true, users)
