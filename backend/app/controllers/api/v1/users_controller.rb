@@ -1,6 +1,14 @@
 module Api
   module V1
     class UsersController < ApplicationController
+      skip_before_action :authorize_request, only: [:create]
+
+      # GET /api/v1/users
+      def index
+        users = User.select(:id, :email, :name)
+        render json: users, status: :ok
+      end
+
       # POST /api/v1/users
       def create
         user = User.new(user_params)
