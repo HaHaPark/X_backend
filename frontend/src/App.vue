@@ -3,10 +3,8 @@
 div#app
   //logo
   .logo-container
-    a(href="https://vite.dev" target="_blank")
-      img.logo(src="/vite.svg" alt="Vite logo")
-    a(href="https://vuejs.org/" target="_blank")
-      img.logo.vue(src="./assets/vue.svg" alt="Vue logo")
+    a(href="#" target="_blank")
+    img.logo(src="@/assets/logo.png" alt="My Logo")
 
   //- navi
   nav
