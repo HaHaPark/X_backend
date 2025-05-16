@@ -4,6 +4,7 @@ import Login  from '@/components/Login.vue'
 import Logout from '@/components/Logout.vue'
 import WorkspaceList from '@/components/WorkspaceList.vue'
 import TaskList      from '@/components/TaskList.vue'
+import ProgressView  from '@/components/ProgressView.vue'
 
 const routes = [
   { path: '/signup', component: Signup },
@@ -15,7 +16,8 @@ const routes = [
     name: 'tasks',
     component: TaskList,
     props: true
-  }
+  },
+  { path: '/workspaces/:workspaceId/progress', name: 'progress', component: ProgressView, props: true },
 ]
 
 const router = createRouter({

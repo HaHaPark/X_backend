@@ -7,12 +7,12 @@ div.workspace-list
     div.card(v-for="ws in workspaces" :key="ws.id")
       h2 {{ ws.name }}
       p.description {{ ws.description }}
-      //- 参加済みなら「開く」ボタン
-      button.enter-btn(v-if="joinedIds.includes(ws.id)"
-                      @click="goToTasks(ws.id)") ワークスペースを開く
+      //- 参加済みなら「開く」と「進捗を見る」ボタン
+      .btn-group(v-if="joinedIds.includes(ws.id)")
+        button.enter-btn(@click="goToTasks(ws.id)") ワークスペースを開く
+        button.progress-btn(@click="goToProgress(ws.id)") 進捗を見る
       //- 未参加なら「参加」ボタン
-      button.join-btn(v-else
-                      @click="joinWorkspace(ws.id)") 参加
+      button.join-btn(v-else @click="joinWorkspace(ws.id)") 参加
 
   //- 作成モーダル
   div.modal(v-if="showCreateModal")
@@ -80,6 +80,10 @@ function goToTasks(id) {
   router.push({ name: 'tasks', params: { workspaceId: id } })
 }
 
+function goToProgress(id) {
+  router.push({ name: 'progress', params: { workspaceId: id } })
+}
+
 onMounted(fetchWorkspaces)
 </script>
 
@@ -111,22 +115,29 @@ onMounted(fetchWorkspaces)
   h2 { margin: 0 0 .5rem; }
   .description { font-size: .9rem; color: #555; margin-bottom: .5rem; }
 }
-.join-btn {
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+.join-btn,
+.enter-btn,
+.progress-btn {
   padding: .5rem 1rem;
-  background: #42b983;
-  color: white;
   border: none;
   border-radius: .25rem;
   cursor: pointer;
 }
+.join-btn {
+  background: #42b983;
+  color: white;
+}
 .enter-btn {
-  padding: .5rem 1rem;
   background: #3477eb;
   color: white;
-  border: none;
-  border-radius: .25rem;
-  margin-right: .5rem;
-  cursor: pointer;
+}
+.progress-btn {
+  background: #ff9900;
+  color: white;
 }
 
 /* モーダルスタイル */

@@ -18,7 +18,8 @@ Rails.application.routes.draw do
 
       resources :workspaces, only: [:index, :show, :create, :update, :destroy] do
         post   'join', on: :member
-      
+        get    'progress', on: :member, to: 'progress#index'
+
         resources :tasks, only: [:index, :create]
       end
 
