@@ -47,4 +47,6 @@ group :development, :test do
 
   gem 'whenever', require: false
 
+  gem 'rspec-rails', github: 'rspec/rspec-rails', branch: 'main'
+
 end
