@@ -24,6 +24,8 @@ Rails.application.routes.draw do
 
       # task (show/update/destroy)
       resources :tasks, only: [:show, :update, :destroy]
+
+      
     end
   end
 end

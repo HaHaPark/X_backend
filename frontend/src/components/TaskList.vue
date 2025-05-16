@@ -7,7 +7,6 @@ div.task-list
     button.back(@click="goBack") 戻る
     button.new-task(@click="showCreateTask = true") 新しいタスクを作成
 
-  //- タスク一覧
   ul.tasks
     li.task-item(v-for="task in tasks" :key="task.id")
       h2.title {{ task.title }}
@@ -37,7 +36,10 @@ div.task-list
           input#due_date(type="date" v-model="newTask.due_date" required)
         .field
           label(for="category") カテゴリ
-          input#category(type="text" v-model="newTask.category")
+          select#category(v-model="newTask.category" required)
+            option(value="" disabled) — 選択してください —
+            option(v-for="cat in CATEGORIES" :key="cat" :value="cat") {{ cat }}
+        // ステータスは常に pending
         input(type="hidden" v-model="newTask.status")
         .actions
           button(type="submit") 作成
@@ -59,13 +61,14 @@ div.task-list
           input#edit-due_date(type="date" v-model="editTask.due_date" required)
         .field
           label(for="edit-category") カテゴリ
-          input#edit-category(type="text" v-model="editTask.category")
+          select#edit-category(v-model="editTask.category" required)
+            option(value="" disabled) — 選択してください —
+            option(v-for="cat in CATEGORIES" :key="cat" :value="cat") {{ cat }}
         .field
           label(for="edit-status") ステータス
-          select#edit-status(v-model="editTask.status")
-            option(value="pending") pending
-            option(value="in_progress") in_progress
-            option(value="completed") completed
+          select#edit-status(v-model="editTask.status" required)
+            option(value="" disabled) — 選択してください —
+            option(v-for="st in STATUSES" :key="st" :value="st") {{ st }}
         .actions
           button(type="submit") 更新
           button(type="button" @click="showEditTask = false") キャンセル
@@ -76,29 +79,48 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 
-// router
+// 고정된 선택지
+const CATEGORIES = ['feature', 'bugfix', 'research']
+const STATUSES   = ['pending', 'in_progress', 'completed']
+
 const route       = useRoute()
 const router      = useRouter()
 const workspaceId = route.params.workspaceId
 
-// state
 const tasks          = ref([])
 const workspaceName  = ref('')
 const showCreateTask = ref(false)
 const showEditTask   = ref(false)
-const newTask        = ref({
-  title:'', content:'', due_date:'', category:'', status:'pending'
-})
-const editTask       = ref({
-  id: null, title:'', content:'', due_date:'', category:'', status:'pending'
+
+const newTask = ref({
+  title:   '',
+  content: '',
+  due_date: '',
+  category: '',
+  status:  'pending'
 })
 
-// fetch list
+const editTask = ref({
+  id:       null,
+  title:    '',
+  content:  '',
+  due_date: '',
+  category: '',
+  status:   ''
+})
+
 async function fetchTasks() {
   try {
-    const { data: ws } = await axios.get(`/api/v1/workspaces/${workspaceId}`, { withCredentials: true })
+    const { data: ws } = await axios.get(
+      `/api/v1/workspaces/${workspaceId}`,
+      { withCredentials: true }
+    )
     workspaceName.value = ws.name
-    const { data: list } = await axios.get(`/api/v1/workspaces/${workspaceId}/tasks`, { withCredentials: true })
+
+    const { data: list } = await axios.get(
+      `/api/v1/workspaces/${workspaceId}/tasks`,
+      { withCredentials: true }
+    )
     tasks.value = list
   } catch (err) {
     console.error('タスク取得失敗', err)
@@ -106,7 +128,6 @@ async function fetchTasks() {
   }
 }
 
-// create
 async function createTask() {
   try {
     const { data: created } = await axios.post(
@@ -116,16 +137,21 @@ async function createTask() {
     )
     tasks.value.push(created)
     showCreateTask.value = false
-    newTask.value = { title:'', content:'', due_date:'', category:'', status:'pending' }
+    newTask.value = {
+      title:   '',
+      content: '',
+      due_date: '',
+      category: '',
+      status:  'pending'
+    }
   } catch (err) {
     console.error('タスク作成失敗', err)
     alert(err.response?.data?.errors?.join('、') || 'タスクの作成に失敗しました')
   }
 }
 
-// delete
 async function deleteTask(id) {
-  if (!confirm('本当にこのタスクを削除しますか？')) return
+  if (!confirm('本当に削除しますか？')) return
   try {
     await axios.delete(`/api/v1/tasks/${id}`, { withCredentials: true })
     tasks.value = tasks.value.filter(t => t.id !== id)
@@ -136,11 +162,10 @@ async function deleteTask(id) {
 }
 
 function openEditModal(task) {
-  editTask.value = { ...task }  // 복사
+  editTask.value = { ...task }
   showEditTask.value = true
 }
 
-// edit
 async function updateTask() {
   try {
     const { id, ...payload } = editTask.value
@@ -149,16 +174,14 @@ async function updateTask() {
       { task: payload },
       { withCredentials: true }
     )
-    // 리스트 갱신
-    tasks.value = tasks.value.map(t => (t.id === id ? updated : t))
+    tasks.value = tasks.value.map(t => t.id === id ? updated : t)
     showEditTask.value = false
   } catch (err) {
     console.error('タスク更新失敗', err)
-    alert(err.response?.data?.errors?.join('、') || '更新に失敗しました')
+    alert(err.response?.data?.errors?.join('、') || 'タスクの更新に失敗しました')
   }
 }
 
-// back
 function goBack() {
   router.back()
 }
@@ -211,7 +234,6 @@ onMounted(fetchTasks)
 .edit-btn { background: #3477eb; color: white; }
 .del-btn  { background: #e34c4c; color: white; }
 
-/* modal */
 .modal {
   position: fixed; top: 0; left: 0;
   width:100%; height:100%;
