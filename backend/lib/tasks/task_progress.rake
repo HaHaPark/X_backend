@@ -1,17 +1,27 @@
 # lib/tasks/task_progress.rake
 namespace :task_progress do
-  desc "Save each user's task stats to Progress, unique by user_id"
+  desc "ProgressReport table upsert"
   task aggregate: :environment do
-    User.find_each do |user|
-      total = Task.where(user: user).count
-      done  = Task.where(user: user, status: "completed").count
-      rate  = total.zero? ? 0 : (done.to_f / total * 100).round(1)
+    Workspace.find_each do |ws|
+      ws.users.find_each do |user|
+        total     = ws.tasks.where(user: user).count
+        completed = ws.tasks.where(user: user, status: 'completed').count
+        rate      = total.positive? ? (completed * 100.0 / total).round(1) : 0.0
 
-      Progress.upsert(
-        { user_id: user.id, total: total, completed: done, rate: rate, updated_at: Time.current },
-        unique_by: :user_id
-      )
+        ProgressReport.upsert(
+          {
+            workspace_id:    ws.id,
+            user_id:         user.id,
+            total_tasks:     total,
+            completed_tasks: completed,
+            progress_rate:   rate,
+            aggregated_at:   Time.current
+          },
+          unique_by: %i[workspace_id user_id]
+        )
+      end
     end
-    puts "[#{Time.current}] task_progress:aggregate 완료"
+
+    puts "[#{Time.current}] task_progress:aggregate complete"
   end
 end

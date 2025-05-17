@@ -10,7 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_12_133460) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_16_141719) do
+  create_table "progress_reports", force: :cascade do |t|
+    t.integer "workspace_id", null: false
+    t.integer "user_id", null: false
+    t.integer "total_tasks", default: 0, null: false
+    t.integer "completed_tasks", default: 0, null: false
+    t.float "progress_rate", default: 0.0, null: false
+    t.datetime "aggregated_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_progress_reports_on_user_id"
+    t.index ["workspace_id", "user_id"], name: "idx_progress_reports_on_workspace_and_user", unique: true
+    t.index ["workspace_id"], name: "index_progress_reports_on_workspace_id"
+  end
+
+  create_table "progresses", force: :cascade do |t|
+    t.integer "workspace_id", null: false
+    t.integer "user_id", null: false
+    t.integer "total"
+    t.integer "completed"
+    t.float "rate"
+    t.datetime "aggregated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_progresses_on_user_id"
+    t.index ["workspace_id"], name: "index_progresses_on_workspace_id"
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.string "title"
     t.text "content"
@@ -50,6 +77,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_133460) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "progress_reports", "users"
+  add_foreign_key "progress_reports", "workspaces"
+  add_foreign_key "progresses", "users"
+  add_foreign_key "progresses", "workspaces"
   add_foreign_key "tasks", "users"
   add_foreign_key "tasks", "workspaces"
   add_foreign_key "workspace_users", "users"

@@ -1,3 +1,4 @@
+<!-- src/components/ProgressView.vue -->
 <template lang="pug">
 div.progress-view
   h1 {{ workspaceName }} の進捗レポート
@@ -33,7 +34,7 @@ const workspaceName = ref('')
 
 async function fetchProgress() {
   try {
-    // 워크스페이스 정보로 이름 가져오기
+    // 워크스페이스 이름 조회
     const { data: ws } = await axios.get(
       `/api/v1/workspaces/${workspaceId}`,
       { withCredentials: true }
