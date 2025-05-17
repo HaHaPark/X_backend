@@ -1,25 +1,20 @@
-# README
+# Team Task Manager
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## 🚀 概要
+簡易SaaS型のタスク共有ツールです。  
+- **バックエンド**：Ruby on Rails （APIモード）  
+- **フロントエンド**：Vue.js 3 + Vite + Axios + Pug  
+- **データベース**：SQLite3  
+- **認証**：Railsセッション方式
+- **バッチ処理**：Whenever＋Rakeタスクによる定期集計  
 
-Things you may want to cover:
+### 主な機能
+1. ユーザー認証（サインアップ / ログイン / ログアウト）  
+2. ワークスペース管理（作成 / 参加 / 切り替え）  
+3. タスク管理（作成 / 編集 / 削除 / ステータス切り替え）  
+4. タスクフィルタリング（担当者 / カテゴリ / ステータス）  
+5. 進捗レポート（Rakeタスクで毎日 2:00 に集計）  
 
-* Ruby version
+---
 
-* System dependencies
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-# X_backend
